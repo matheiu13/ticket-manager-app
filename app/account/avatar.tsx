@@ -2,22 +2,22 @@
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
+import { Avatar } from '@mantine/core'
 
-export default function Avatar({
+export function UpdateAvatar({
   uid,
   url,
   size,
   onUpload,
 }: {
-  uid: string | null
-  url: string | null
-  size: number
-  onUpload: (url: string) => void
+  uid: string | null,
+  url: string | null,
+  size: number,
+  onUpload: (url: string ) => void | null,
 }) {
   const supabase = createClient()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
   const [uploading, setUploading] = useState(false)
-
   useEffect(() => {
     async function downloadImage(path: string) {
       try {
@@ -28,6 +28,8 @@ export default function Avatar({
 
         const url = URL.createObjectURL(data)
         setAvatarUrl(url)
+        // console.log(avatarUrl);
+        
       } catch (error) {
         console.log('Error downloading image: ', error)
       }
@@ -92,6 +94,44 @@ export default function Avatar({
           disabled={uploading}
         />
       </div>
+    </div>
+  )
+}
+
+export function UserAvatar({
+  url,
+}: {
+  url: string | null,
+}) {
+  const supabase = createClient()
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
+  useEffect(() => {
+    async function downloadImage(path: string) {
+      try {
+        const { data, error } = await supabase.storage.from('avatars').download(path)
+        if (error) {
+          throw error
+        }
+
+        const url = URL.createObjectURL(data)
+        setAvatarUrl(url)
+        // console.log(avatarUrl);
+        
+      } catch (error) {
+        console.log('Error downloading image: ', error)
+      }
+    }
+
+    if (url) downloadImage(url)
+  }, [url, supabase])
+
+  return (
+    <div>
+      {avatarUrl ? (
+        <Avatar src={avatarUrl} radius="sm"/>
+      ) : (
+        <Avatar variant="outline"  />
+      )}
     </div>
   )
 }

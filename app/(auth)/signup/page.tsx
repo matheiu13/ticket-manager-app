@@ -1,11 +1,10 @@
 import React from 'react'
 import { Container, Title } from "@mantine/core"
-import LoginForm from "../components/LoginForm/LoginForm";
+import SignupForm from '../../components/SignupForm/SignupForm'
 export default function page() {
   return (
     <Container>
-        <Title>Login to your account</Title>
-        <LoginForm />
+        <SignupForm/>
     </Container>
   )
 }

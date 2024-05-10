@@ -2,7 +2,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { type User } from "@supabase/supabase-js";
-import { Button, Container, TextInput } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  Card,
+  Center,
+  Container,
+  Flex,
+  TextInput,
+} from "@mantine/core";
 import Avatar from "./avatar";
 
 export default function AccountForm({ user }: { user: User | null }) {
@@ -10,16 +18,14 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
   const [avatar_url, setAvatarUrl] = useState<string | null>(null);
 
   const getProfile = useCallback(async () => {
     try {
       setLoading(true);
-
       const { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, username, website, avatar_url`)
+        .select(`full_name, username, avatar_url`)
         .eq("id", user?.id)
         .single();
 
@@ -31,7 +37,6 @@ export default function AccountForm({ user }: { user: User | null }) {
       if (data) {
         setFullname(data.full_name);
         setUsername(data.username);
-        setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
@@ -47,12 +52,11 @@ export default function AccountForm({ user }: { user: User | null }) {
 
   async function updateProfile({
     username,
-    website,
+    fullname,
     avatar_url,
   }: {
     username: string | null;
     fullname: string | null;
-    website: string | null;
     avatar_url: string | null;
   }) {
     try {
@@ -62,7 +66,6 @@ export default function AccountForm({ user }: { user: User | null }) {
         id: user?.id as string,
         full_name: fullname,
         username,
-        website,
         avatar_url,
         updated_at: new Date().toISOString(),
       });
@@ -77,55 +80,58 @@ export default function AccountForm({ user }: { user: User | null }) {
 
   return (
     <Container>
-      <Avatar
-        uid={user?.id ?? null}
-        url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          setAvatarUrl(url);
-          updateProfile({ fullname, username, website, avatar_url: url });
-        }}
-      />
-      <TextInput
-        label="Email"
-        id="email"
-        type="text"
-        defaultValue={user?.email}
-      />
-      <TextInput
-        label="Full name"
-        id="fullName"
-        type="text"
-        value={fullname || ""}
-        onChange={(e) => setFullname(e.target.value)}
-      />
-      <TextInput
-        label="Username"
-        id="username"
-        type="text"
-        value={username || ""}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <TextInput
-        label="Website"
-        id="website"
-        type="url"
-        value={website || ""}
-        onChange={(e) => setWebsite(e.target.value)}
-      />
-      <Button
-        onClick={() =>
-          updateProfile({ fullname, username, website, avatar_url })
-        }
-        disabled={loading}
-      >
-        {loading ? "Loading ..." : "Update"}
-      </Button>
-      <form action="/auth/signout" method="post">
-        <Button variant="outline" color="green" type="submit">
-          Sign out
-        </Button>
-      </form>
+      <Center>
+        <Card shadow="sm" padding="lg" withBorder w="50vw">
+          <Avatar
+            uid={user?.id ?? null}
+            url={avatar_url}
+            size={150}
+            onUpload={(url) => {
+              setAvatarUrl(url);
+              updateProfile({ fullname, username, avatar_url: url });
+            }}
+          />
+          <TextInput
+            label="Email"
+            id="email"
+            type="text"
+            value={user?.email}
+            disabled
+          />
+          <TextInput
+            label="Full name"
+            id="fullName"
+            type="text"
+            value={fullname || ""}
+            onChange={(e) => setFullname(e.target.value)}
+          />
+          <TextInput
+            label="Username"
+            id="username"
+            type="text"
+            value={username || ""}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <Flex justify="flex-end" w="100%" mt={10}>
+            <Button
+              onClick={() => updateProfile({ fullname, username, avatar_url })}
+              disabled={loading}
+              size="sm"
+              color="green"
+            >
+              {loading ? "Loading ..." : "Update"}
+            </Button>
+          </Flex>
+        </Card>
+      </Center>
+      <br />
+      {!fullname && (
+        <Center>
+          <form action="/auth/signout" method="post">
+            <Anchor type="submit">Sign out</Anchor>
+          </form>
+        </Center>
+      )}
     </Container>
   );
 }

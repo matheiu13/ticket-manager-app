@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
+import Header from "./shared/Header/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <main>
-          <MantineProvider defaultColorScheme="dark">
+          <MantineProvider>
+            <Header />
             <ModalsProvider>{children}</ModalsProvider>
           </MantineProvider>
         </main>

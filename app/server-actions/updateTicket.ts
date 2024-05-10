@@ -1,13 +1,11 @@
 "use server";
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { TicketValues } from "../ticket/[id]/EditTicket";
+import createSupabaseServerClient from "@/utils/supabase/server";
 
 export async function updateTicket(formData: TicketValues) {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const supabase = createSupabaseServerClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();

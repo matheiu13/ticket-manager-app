@@ -1,7 +1,7 @@
 import AccountForm from "./AccountForm";
 import createSupabaseServerClient from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { readUserSession } from "../actions";
+import { readUserSession } from "../(auth)/actions";
 export default async function Account() {
   const { data } = await readUserSession();
   if (!data.user) {

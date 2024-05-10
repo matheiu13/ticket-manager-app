@@ -19,7 +19,7 @@ export default function AddTicket() {
   };
   return (
     <Box>
-      <Button onClick={open}>Add Ticket</Button>
+      <Button onClick={open} color="teal" variant="outline">Add Ticket</Button>
       <Modal opened={opened} onClose={close} title="Add a Ticket">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack>

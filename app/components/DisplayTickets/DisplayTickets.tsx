@@ -3,8 +3,6 @@ import {
   Badge,
   Box,
   Button,
-  Checkbox,
-  Container,
   Flex,
   Group,
   Table,
@@ -13,7 +11,6 @@ import {
   TableTh,
   TableThead,
   TableTr,
-  Text,
 } from "@mantine/core";
 import createSupabaseServerClient from "@/utils/supabase/server";
 import StatusApprover from "./StatusApprover";
@@ -24,8 +21,10 @@ import Link from "next/link";
 
 export default async function DisplayTickets({
   pages,
+  user,
 }: {
   pages: { [key: string]: string | string[] | undefined };
+  user: string | null;
 }) {
   // start pagination formula
   const page = pages["page"];
@@ -43,7 +42,7 @@ export default async function DisplayTickets({
     error,
   } = await supabase
     .from("tickets")
-    .select("*", { count: "exact" })
+    .select(`*, ticket_status(status)`, { count: "exact" })
     .order("updated_at", { ascending: false })
     .range(start, end);
 
@@ -51,6 +50,7 @@ export default async function DisplayTickets({
     console.log("Error fetching forms");
   } else {
     // console.log(count);
+    // console.log(tickets);
   }
   function formatDate(dateString: string): string {
     if (dateString == null) return "";
@@ -68,8 +68,10 @@ export default async function DisplayTickets({
   }
   return (
     <Box>
-      <PaginationControls length={count} />
-      <AddTicket />
+      <Group justify="space-between" my={10}>
+        <PaginationControls length={count} />
+        <AddTicket />
+      </Group>
       <Table>
         <TableThead>
           <TableTr>
@@ -87,10 +89,12 @@ export default async function DisplayTickets({
             return (
               <TableTr key={index}>
                 <TableTd key={ticket.ticket_id}>
-                  <StatusApprover
-                    id={ticket.ticket_id}
-                    status={ticket.status}
-                  />
+                  {user == "admin" && (
+                    <StatusApprover
+                      id={ticket.ticket_id}
+                      status={ticket.ticket_status.status}
+                    />
+                  )}
                 </TableTd>
                 <TableTd>
                   <Box w="10vw">{ticket.ticket_id}</Box>
@@ -99,13 +103,13 @@ export default async function DisplayTickets({
                 <TableTd>{formatDate(ticket.updated_at)}</TableTd>
                 <TableTd>{ticket.ticket_name}</TableTd>
                 <TableTd>
-                  {ticket.status == "pending" ? (
+                  {ticket.ticket_status.status == "pending" ? (
                     <Badge color="orange" variant="outline">
-                      {ticket.status}
+                      {ticket.ticket_status.status}
                     </Badge>
                   ) : (
                     <Badge color="green" variant="outline">
-                      {ticket.status}
+                      {ticket.ticket_status.status}
                     </Badge>
                   )}
                 </TableTd>

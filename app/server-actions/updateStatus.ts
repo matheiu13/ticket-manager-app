@@ -1,12 +1,10 @@
 "use server";
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import createSupabaseServerClient from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 export async function updateStatus(id: any, status: any) {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const supabase = createSupabaseServerClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -20,7 +18,7 @@ export async function updateStatus(id: any, status: any) {
   if (!status) {
     console.log("checked");
     try {
-      const {data, error} = await supabase.from("tickets").update({status: "approved"}).eq("ticket_id", id);
+      const {data, error} = await supabase.from("ticket_status").update({status: "approved"}).eq("ticket_id", id);
       if(error){
           alert("approving failed");
       }
@@ -30,7 +28,7 @@ export async function updateStatus(id: any, status: any) {
   } else {
     console.log("unchecked");
     try {
-      const {data, error} = await supabase.from("tickets").update({status: "pending"}).eq("ticket_id", id);
+      const {data, error} = await supabase.from("ticket_status").update({status: "pending"}).eq("ticket_id", id);
       if(error){
           alert("approving failed");
       }
