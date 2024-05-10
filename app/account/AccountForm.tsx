@@ -11,7 +11,7 @@ import {
   Flex,
   TextInput,
 } from "@mantine/core";
-import Avatar from "./avatar";
+import {UpdateAvatar} from "./avatar";
 
 export default function AccountForm({ user }: { user: User | null }) {
   const supabase = createClient();
@@ -82,7 +82,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     <Container>
       <Center>
         <Card shadow="sm" padding="lg" withBorder w="50vw">
-          <Avatar
+          <UpdateAvatar
             uid={user?.id ?? null}
             url={avatar_url}
             size={150}
