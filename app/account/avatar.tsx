@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
 import { Avatar } from '@mantine/core'
 
-export function UpdateAvatar({
+export default function UpdateAvatar({
   uid,
   url,
   size,

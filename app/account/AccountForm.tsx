@@ -11,7 +11,7 @@ import {
   Flex,
   TextInput,
 } from "@mantine/core";
-import {UpdateAvatar} from "./avatar";
+import UpdateAvatar from "./avatar";
 
 export default function AccountForm({ user }: { user: User | null }) {
   const supabase = createClient();
